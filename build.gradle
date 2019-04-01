@@ -1,0 +1,69 @@
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+
+    configurations.maybeCreate("pitest")
+    dependencies {
+        classpath("info.solidsoft.gradle.pitest:gradle-pitest-plugin:1.3.0")
+        pitest 'org.pitest:pitest-junit5-plugin:0.7'
+    }
+}
+
+plugins {
+    id "io.spring.dependency-management" version "1.0.6.RELEASE"
+    id "net.ltgt.apt-eclipse" version "0.18"
+    id "net.ltgt.apt-idea" version "0.18"
+}
+
+apply plugin: 'application'
+apply plugin: 'java'
+apply plugin: 'eclipse'
+apply plugin: 'idea'
+apply plugin: 'info.solidsoft.pitest'
+
+
+group 'com.xbank.moneytransfer'
+version '0.1.0'
+
+compileJava {
+    sourceCompatibility = 8
+    targetCompatibility = 8
+}
+
+repositories {
+    mavenCentral()
+    maven { url "https://jcenter.bintray.com" }
+}
+
+dependencyManagement {
+    imports {
+        mavenBom 'io.micronaut:micronaut-bom:1.0.5'
+    }
+}
+
+dependencies {
+    //micronaut
+    annotationProcessor "io.micronaut:micronaut-inject-java"
+    annotationProcessor "io.micronaut:micronaut-validation"
+    compile "io.micronaut:micronaut-inject"
+    compile "io.micronaut:micronaut-validation"
+    compile "io.micronaut:micronaut-runtime"
+    compile "io.micronaut:micronaut-http-client"
+    compile "io.micronaut:micronaut-http-server-netty"
+    runtime "ch.qos.logback:logback-classic:1.2.3"
+    compileOnly "io.micronaut:micronaut-inject-java"
+    testCompile "io.micronaut:micronaut-inject-java"
+    //mironaut
+
+    testCompile 'org.mockito:mockito-junit-jupiter:2.23.0'
+    testCompile "org.junit.jupiter:junit-jupiter-api:5.3.2"
+    testCompile 'org.junit.platform:junit-platform-launcher:1.1.0'
+    testRuntime "org.junit.jupiter:junit-jupiter-engine:5.3.2"
+}
+
+test {
+    useJUnitPlatform()
+}
+
+mainClassName = "com.xbank.moneytransfer.Application"
