@@ -6,6 +6,7 @@ import io.micronaut.http.annotation.Post;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Collections;
 import java.util.List;
 
 @Controller("/money-transfer")
@@ -13,13 +14,13 @@ public class MoneyTransferController {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(MoneyTransferController.class);
 
-	@Get("/")
+	@Get("/{account}")
 	public List<MoneyTransferDTO> listTransfersForAccount(String account) {
 		LOGGER.debug("Listing transfers related to account " + account);
-		return null;
+		return Collections.emptyList();
 	}
 
-	@Post("/")
+	@Post
 	public void makeTransfer(MoneyTransferDTO transfer) {
 		LOGGER.debug("Transfering " + transfer.getValue() + " [sourceAccount:" + transfer.getSourceAccount() + "] [destinationAccount:" + transfer.getDestinationAccount() + "]");
 	}
