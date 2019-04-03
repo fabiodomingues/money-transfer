@@ -1,6 +1,5 @@
 package com.xbank.moneytransfer.controller;
 
-import com.xbank.moneytransfer.domain.TransferStatus;
 import com.xbank.moneytransfer.infrastructure.RepositoryFactory;
 import io.micronaut.context.ApplicationContext;
 import io.micronaut.http.HttpRequest;
@@ -13,7 +12,6 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
-import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -49,11 +47,11 @@ class AccountsControllerTest {
 		});
 	}
 
-	private HttpResponse<MoneyTransferProtocolDTO> get(String uri) {
+	private HttpResponse<MoneyTransferStatusDTO> get(String uri) {
 		return client.toBlocking().exchange(HttpRequest.GET(uri));
 	}
 
-	private HttpResponse<MoneyTransferProtocolDTO> post(String uri, AccountDTO dto) {
+	private HttpResponse<MoneyTransferStatusDTO> post(String uri, AccountDTO dto) {
 		HttpRequest<AccountDTO> post = HttpRequest.POST(uri, dto);
 		return client.toBlocking().exchange(post);
 	}

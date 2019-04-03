@@ -1,7 +1,6 @@
 package com.xbank.moneytransfer.controller;
 
 import com.xbank.moneytransfer.domain.Account;
-import com.xbank.moneytransfer.domain.TransferStatus;
 import com.xbank.moneytransfer.infrastructure.RepositoryFactory;
 import io.micronaut.context.ApplicationContext;
 import io.micronaut.http.HttpRequest;
@@ -14,7 +13,6 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
-import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -47,28 +45,23 @@ class MoneyTransferControllerTest {
 		dto.setDestinationAccount(destinationAccount.getAccountCode());
 		dto.setAmount(1104.45);
 
-		HttpResponse<MoneyTransferProtocolDTO> postResult = post("/money-transfer", dto);
-		Optional<MoneyTransferProtocolDTO> protocolOptional = postResult.getBody();
+		HttpResponse<MoneyTransferStatusDTO> postResult = post("/money-transfer", dto);
+		String location = postResult.header("Location");
 
 		assertThat(postResult.getStatus().getCode()).isEqualTo(HttpStatus.ACCEPTED.getCode());
-		assertThat(protocolOptional).hasValueSatisfying(protocol -> {
-			assertThat(protocol.getProtocolId()).isNotNull();
-			assertThat(protocol.getStatus()).isEqualTo(TransferStatus.PENDING);
-		});
+		assertThat(location).contains("/money-transfer/");
+		assertThat(location.split("/money-transfer/")[1]).containsPattern(getUUIDPattern());
 
-		HttpResponse<MoneyTransferProtocolDTO> getResult = get("/money-transfer/" + protocolOptional.get().getProtocolId());
-		assertThat(getResult.getStatus().getCode()).isEqualTo(HttpStatus.OK);
-		assertThat(getResult.getBody()).hasValueSatisfying(protocol -> {
-			assertThat(protocol.getProtocolId()).isNotNull();
-			assertThat(protocol.getStatus()).isEqualTo(TransferStatus.COMPLETED);
-		});
+		MoneyTransferStatusDTO moneyTransferStatusDTO = client.toBlocking().retrieve(HttpRequest.GET(location), MoneyTransferStatusDTO.class);
+		assertThat(moneyTransferStatusDTO.getTransferId()).isNotNull();
+		assertThat(moneyTransferStatusDTO.getStatus()).isEqualTo("COMPLETED");
 	}
 
-	private HttpResponse<MoneyTransferProtocolDTO> get(String uri) {
-		return client.toBlocking().exchange(HttpRequest.GET(uri));
+	private String getUUIDPattern() {
+		return "[0-9a-fA-F]{8}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{12}";
 	}
 
-	private HttpResponse<MoneyTransferProtocolDTO> post(String uri, MoneyTransferDTO dto) {
+	private <T> HttpResponse<T> post(String uri, MoneyTransferDTO dto) {
 		HttpRequest<MoneyTransferDTO> post = HttpRequest.POST(uri, dto);
 		return client.toBlocking().exchange(post);
 	}

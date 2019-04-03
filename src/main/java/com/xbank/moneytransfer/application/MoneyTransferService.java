@@ -18,15 +18,18 @@ public class MoneyTransferService {
 	}
 
 	public UUID transfer(String sourceAccountCode, String destinationAccountCode, double value) {
+		Transfer transfer = createTransfer(sourceAccountCode, destinationAccountCode, value);
+		startTransfer(transfer);
+		return transfer.getId();
+	}
+
+	private Transfer createTransfer(String sourceAccountCode, String destinationAccountCode, double value) {
 		Transfer transfer = new Transfer(UUID.randomUUID());
 		transfer.setSourceAccount(loadAccount(sourceAccountCode));
 		transfer.setDestinationAccount(loadAccount(destinationAccountCode));
 		transfer.setAmount(BigDecimal.valueOf(value));
 		transferRepository.add(transfer);
-
-		startTransfer(transfer);
-
-		return transfer.getId();
+		return transfer;
 	}
 
 	private Account loadAccount(String account) {
