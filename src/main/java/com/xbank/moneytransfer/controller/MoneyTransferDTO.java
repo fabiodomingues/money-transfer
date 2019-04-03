@@ -1,12 +1,10 @@
 package com.xbank.moneytransfer.controller;
 
-import java.math.BigDecimal;
-
 public class MoneyTransferDTO {
 
 	private String sourceAccount;
 	private String destinationAccount;
-	private BigDecimal value;
+	private Double amount;
 
 	public String getSourceAccount() {
 		return sourceAccount;
@@ -24,11 +22,11 @@ public class MoneyTransferDTO {
 		this.destinationAccount = destinationAccount;
 	}
 
-	public BigDecimal getValue() {
-		return value;
+	public Double getAmount() {
+		return amount;
 	}
 
-	public void setValue(BigDecimal value) {
-		this.value = value;
+	public void setAmount(Double amount) {
+		this.amount = amount;
 	}
 }
