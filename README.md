@@ -90,7 +90,7 @@ gradlew run
 ```
 On windows machines type
 ```
-gradle.bat run
+gradlew.bat run
 ```
 
 
