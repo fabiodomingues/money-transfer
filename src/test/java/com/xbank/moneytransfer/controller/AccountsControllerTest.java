@@ -38,8 +38,8 @@ class AccountsControllerTest {
 		accountDTO.setAccountCode("ttt-987654-xyz");
 		accountDTO.setBalance(250.15);
 
-		HttpResponse postResult = post("/accounts", accountDTO);
-		assertThat(postResult.getStatus().getCode()).isEqualTo(HttpStatus.OK.getCode());
+		HttpResponse<AccountDTO> postResult = post("/accounts", accountDTO);
+		assertThat(postResult.getStatus().getCode()).isEqualTo(HttpStatus.CREATED.getCode());
 
 		AccountDTO accountRetrieved = get("/accounts/ttt-987654-xyz");
 		assertThat(accountRetrieved.getAccountCode()).isEqualTo("ttt-987654-xyz");

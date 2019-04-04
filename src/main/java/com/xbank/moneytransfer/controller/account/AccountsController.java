@@ -33,7 +33,7 @@ public class AccountsController {
 
 		accountHandler.createAccount(accountDTO.getAccountCode(), accountDTO.getBalance());
 
-		return HttpResponse.ok();
+		return HttpResponse.created(accountDTO);
 	}
 
 	@Get("/{accountCode}")
