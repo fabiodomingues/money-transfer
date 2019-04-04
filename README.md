@@ -1,4 +1,11 @@
-# API
+# API ENDPOINTS
+
+#### POST - /accounts
+#### GET  - /accounts/{accountCode}
+#### POST - /money-transfer
+#### GET  - /money-transfer/{transferId}
+
+## Documentation
 
 ### POST - /accounts
 request body
