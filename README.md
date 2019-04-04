@@ -4,6 +4,7 @@
 #### GET  - /accounts/{accountCode}
 #### POST - /money-transfer
 #### GET  - /money-transfer/{transferId}
+_________________________________________
 
 ## Documentation
 
@@ -79,8 +80,18 @@ response body
 ```json
 {}
 ```
+______________________________________________
 
+# HOW TO EXECUTE
 
+On root project folder for linux machines type
+```
+gradlew run
+```
+On windows machines type
+```
+gradle.bat run
+```
 
 
 
