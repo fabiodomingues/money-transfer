@@ -1,17 +1,17 @@
-package com.xbank.moneytransfer.controller;
+package com.xbank.moneytransfer.application.account;
 
-import com.xbank.moneytransfer.application.AccountBalanceNegativeException;
-import com.xbank.moneytransfer.application.AccountCodeAlreadyUsedException;
-import com.xbank.moneytransfer.application.AccountRepository;
+import com.xbank.moneytransfer.application.transfer.register.AccountBalanceNegativeException;
+import com.xbank.moneytransfer.application.transfer.register.AccountCodeAlreadyUsedException;
 import com.xbank.moneytransfer.domain.Account;
 
 import java.math.BigDecimal;
+import java.util.Optional;
 
-public class AccountService {
+public class AccountHandler {
 
 	private AccountRepository accountRepository;
 
-	public AccountService(AccountRepository accountRepository) {
+	public AccountHandler(AccountRepository accountRepository) {
 		this.accountRepository = accountRepository;
 	}
 
@@ -21,6 +21,10 @@ public class AccountService {
 
 		BigDecimal initialAccountBalance = BigDecimal.valueOf(initialBalance);
 		accountRepository.add(new Account(accountCode, initialAccountBalance));
+	}
+
+	public Optional<Account> retrieveAccount(String accountCode) {
+		return this.accountRepository.withId(accountCode);
 	}
 
 	private void checkAccountCode(String accountCode) {

@@ -3,7 +3,7 @@ package com.xbank.moneytransfer.domain;
 import java.math.BigDecimal;
 import java.util.UUID;
 
-public class Transfer {
+public class TransferRegistry {
 
 	public UUID id;
 	private Account sourceAccount;
@@ -11,7 +11,7 @@ public class Transfer {
 	private TransferStatus status;
 	private BigDecimal amount;
 
-	public Transfer(UUID id) {
+	public TransferRegistry(UUID id) {
 		this.id = id;
 		this.status = TransferStatus.PENDING;
 	}

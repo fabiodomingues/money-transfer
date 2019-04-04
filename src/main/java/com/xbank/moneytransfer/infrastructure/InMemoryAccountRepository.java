@@ -1,6 +1,6 @@
 package com.xbank.moneytransfer.infrastructure;
 
-import com.xbank.moneytransfer.application.AccountRepository;
+import com.xbank.moneytransfer.application.account.AccountRepository;
 import com.xbank.moneytransfer.domain.Account;
 
 import java.util.HashMap;

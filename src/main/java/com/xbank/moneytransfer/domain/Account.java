@@ -29,12 +29,4 @@ public class Account {
 	public void debit(BigDecimal debit) {
 		balance = balance.subtract(debit);
 	}
-
-	public Date getLastUpdate() {
-		return lastUpdate;
-	}
-
-	public void setLastUpdate(Date lastUpdate) {
-		this.lastUpdate = lastUpdate;
-	}
 }

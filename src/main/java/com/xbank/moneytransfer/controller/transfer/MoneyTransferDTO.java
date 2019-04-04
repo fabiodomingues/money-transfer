@@ -1,4 +1,4 @@
-package com.xbank.moneytransfer.controller;
+package com.xbank.moneytransfer.controller.transfer;
 
 public class MoneyTransferDTO {
 

@@ -1,4 +1,4 @@
-package com.xbank.moneytransfer.application;
+package com.xbank.moneytransfer.application.account;
 
 import com.xbank.moneytransfer.domain.Account;
 

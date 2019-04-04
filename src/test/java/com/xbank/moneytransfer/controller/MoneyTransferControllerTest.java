@@ -1,20 +1,26 @@
 package com.xbank.moneytransfer.controller;
 
+import com.xbank.moneytransfer.controller.transfer.MoneyTransferDTO;
+import com.xbank.moneytransfer.controller.transfer.MoneyTransferStatusDTO;
 import com.xbank.moneytransfer.domain.Account;
 import com.xbank.moneytransfer.infrastructure.RepositoryFactory;
 import io.micronaut.context.ApplicationContext;
 import io.micronaut.http.HttpRequest;
 import io.micronaut.http.HttpResponse;
 import io.micronaut.http.HttpStatus;
+import io.micronaut.http.MutableHttpRequest;
 import io.micronaut.http.client.HttpClient;
+import io.micronaut.http.client.exceptions.HttpClientResponseException;
 import io.micronaut.runtime.server.EmbeddedServer;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class MoneyTransferControllerTest {
 
@@ -32,6 +38,30 @@ class MoneyTransferControllerTest {
 		if (server != null) server.stop();
 		if (client != null) client.stop();
 	}
+
+	@Test
+	void should_return_bad_request_when_getting_transfers_when_transfer_id_is_not_an_uuid() {
+		MutableHttpRequest<Object> request = HttpRequest.GET("/money-transfer/123");
+
+		HttpClientResponseException exception = assertThrows(HttpClientResponseException.class, () -> {
+			client.toBlocking().exchange(request);
+		});
+
+		assertThat(exception).hasMessageContaining("Bad Request");
+	}
+
+	@Test
+	void should_return_not_found_when_getting_transfers_when_transfer_id_does_not_exist() {
+		MutableHttpRequest<Object> request = HttpRequest.GET("/money-transfer/" + UUID.randomUUID().toString());
+
+		HttpClientResponseException exception = assertThrows(HttpClientResponseException.class, () -> {
+			client.toBlocking().exchange(request);
+		});
+
+		assertThat(exception).hasMessageContaining("Not Found");
+	}
+
+
 
 	@Test
 	void should_make_a_successful_transfer_asynchronously_and_should_be_possible_to_check_its_status() throws Exception {

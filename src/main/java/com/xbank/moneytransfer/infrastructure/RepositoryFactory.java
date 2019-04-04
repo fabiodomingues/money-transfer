@@ -1,7 +1,7 @@
 package com.xbank.moneytransfer.infrastructure;
 
-import com.xbank.moneytransfer.application.AccountRepository;
-import com.xbank.moneytransfer.application.TransferRepository;
+import com.xbank.moneytransfer.application.account.AccountRepository;
+import com.xbank.moneytransfer.application.transfer.TransferRepository;
 
 public final class RepositoryFactory {
 

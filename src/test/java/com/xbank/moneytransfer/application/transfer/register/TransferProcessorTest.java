@@ -1,7 +1,10 @@
-package com.xbank.moneytransfer.application;
+package com.xbank.moneytransfer.application.transfer.register;
 
+import com.xbank.moneytransfer.application.account.AccountNotFoundException;
+import com.xbank.moneytransfer.application.account.AccountRepository;
+import com.xbank.moneytransfer.application.transfer.TransferRepository;
 import com.xbank.moneytransfer.domain.Account;
-import com.xbank.moneytransfer.domain.Transfer;
+import com.xbank.moneytransfer.domain.TransferRegistry;
 import com.xbank.moneytransfer.domain.TransferStatus;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -22,9 +25,9 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class MoneyTransferServiceTest {
+class TransferProcessorTest {
 
-	private MoneyTransferService moneyTransferService;
+	private TransferProcessor moneyTransferProcessor;
 
 	@Mock
 	private AccountRepository accountRepository;
@@ -34,7 +37,7 @@ class MoneyTransferServiceTest {
 
 	@BeforeEach
 	void setup() {
-		moneyTransferService = new MoneyTransferService(accountRepository, transferRepository);
+		moneyTransferProcessor = new TransferProcessor(accountRepository, transferRepository);
 	}
 
 	@Test
@@ -42,7 +45,7 @@ class MoneyTransferServiceTest {
 		when(accountRepository.withId("x-7789-4")).thenReturn(Optional.empty());
 
 		AccountNotFoundException accountNotFoundException = assertThrows(AccountNotFoundException.class, () -> {
-			moneyTransferService.transfer("x-7789-4", "x-99884", 115.45);
+			moneyTransferProcessor.transfer("x-7789-4", "x-99884", 115.45);
 		});
 
 		assertThat(accountNotFoundException.getMessage()).contains("x-7789-4");
@@ -54,23 +57,10 @@ class MoneyTransferServiceTest {
 		when(accountRepository.withId("x-99884")).thenReturn(Optional.empty());
 
 		AccountNotFoundException accountNotFoundException = assertThrows(AccountNotFoundException.class, () -> {
-			moneyTransferService.transfer("x-7789-4", "x-99884", 115.45);
+			moneyTransferProcessor.transfer("x-7789-4", "x-99884", 115.45);
 		});
 
 		assertThat(accountNotFoundException.getMessage()).contains("x-99884");
-	}
-
-	@Test
-	void should_throw_insufficient_funds_exception_when_source_account_does_not_have_money_enough() {
-		Account sourceAccount = createAccountWithBalance(1000.00);
-		Account destinationAccount = createAccountWithBalance(0.00);
-
-		when(accountRepository.withId("abc-4456")).thenReturn(Optional.of(sourceAccount));
-		when(accountRepository.withId("poy-339744-x")).thenReturn(Optional.of(destinationAccount));
-
-		assertThrows(InsufficientFundsException.class, () -> {
-			moneyTransferService.transfer("abc-4456", "poy-339744-x", 1000.01);
-		});
 	}
 
 	@Test
@@ -81,18 +71,15 @@ class MoneyTransferServiceTest {
 		when(accountRepository.withId("abc-4456")).thenReturn(Optional.of(sourceAccount));
 		when(accountRepository.withId("poy-339744-x")).thenReturn(Optional.of(destinationAccount));
 
-		assertThrows(InsufficientFundsException.class, () -> {
-			moneyTransferService.transfer("abc-4456", "poy-339744-x", 1000.01);
+		moneyTransferProcessor.transfer("abc-4456", "poy-339744-x", 1000.01);
 
-			InOrder inOrder = Mockito.inOrder(accountRepository, transferRepository);
+		InOrder inOrder = Mockito.inOrder(accountRepository, transferRepository);
 
-			ArgumentCaptor<Transfer> transferCaptor = ArgumentCaptor.forClass(Transfer.class);
-			inOrder.verify(transferRepository).add(transferCaptor.capture());
-			inOrder.verify(accountRepository).update(sourceAccount, destinationAccount);
-			inOrder.verify(transferRepository).update(transferCaptor.capture());
+		ArgumentCaptor<TransferRegistry> transferCaptor = ArgumentCaptor.forClass(TransferRegistry.class);
+		inOrder.verify(transferRepository).add(transferCaptor.capture());
+		inOrder.verify(transferRepository).update(transferCaptor.capture());
 
-			assertThat(transferCaptor.getValue().getStatus()).isEqualTo(TransferStatus.CANCELED);
-		});
+		assertThat(transferCaptor.getValue().getStatus()).isEqualTo(TransferStatus.CANCELED);
 	}
 
 	@Test
@@ -103,7 +90,7 @@ class MoneyTransferServiceTest {
 		when(accountRepository.withId("378445-10")).thenReturn(Optional.of(sourceAccount));
 		when(accountRepository.withId("45471-x10")).thenReturn(Optional.of(destinationAccount));
 
-		moneyTransferService.transfer("378445-10", "45471-x10", 500.00);
+		moneyTransferProcessor.transfer("378445-10", "45471-x10", 500.00);
 
 		assertThat(sourceAccount.getBalance()).isEqualTo(BigDecimal.valueOf(500.00));
 		assertThat(destinationAccount.getBalance()).isEqualTo(BigDecimal.valueOf(515.00));
@@ -118,10 +105,10 @@ class MoneyTransferServiceTest {
 		when(accountRepository.withId("378445-10")).thenReturn(Optional.of(sourceAccount));
 		when(accountRepository.withId("45471-x10")).thenReturn(Optional.of(destinationAccount));
 
-		UUID transferId = moneyTransferService.transfer("378445-10", "45471-x10", 500.00);
+		UUID transferId = moneyTransferProcessor.transfer("378445-10", "45471-x10", 500.00);
 
 		InOrder inOrder = Mockito.inOrder(accountRepository, transferRepository);
-		ArgumentCaptor<Transfer> transferCaptor = ArgumentCaptor.forClass(Transfer.class);
+		ArgumentCaptor<TransferRegistry> transferCaptor = ArgumentCaptor.forClass(TransferRegistry.class);
 		inOrder.verify(transferRepository).add(transferCaptor.capture());
 		inOrder.verify(accountRepository).update(sourceAccount, destinationAccount);
 		inOrder.verify(transferRepository).update(transferCaptor.capture());

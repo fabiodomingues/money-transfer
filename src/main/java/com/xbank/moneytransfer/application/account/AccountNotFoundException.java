@@ -1,4 +1,4 @@
-package com.xbank.moneytransfer.application;
+package com.xbank.moneytransfer.application.account;
 
 public class AccountNotFoundException extends RuntimeException {
 
